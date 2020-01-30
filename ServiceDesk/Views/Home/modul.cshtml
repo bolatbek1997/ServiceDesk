@@ -1,0 +1,108 @@
+﻿@model ServiceDesk.Models.Zadacha
+@{
+    ViewBag.Title = "modul";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div>
+    @using (Ajax.BeginForm("Modul", "Home", new AjaxOptions { UpdateTargetId = "DivResult", HttpMethod = "POST" }))
+    {
+    <table class="table">
+        <tr>
+            <td colspan="4" style="text-align:center;" class="table td"><h1>Задача</h1></td>
+        </tr>
+        <tr>
+            <td colspan="3">Название</td>
+            <td style="text-align:right;">Модули</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                @*<input type="text" class="col-md-12" name="Name" />*@
+                @Html.EditorFor(m => m.Name, new { @class = "col-md-12" });
+            </td>
+            <td style="text-align:right;">   @Html.DropDownListFor(m => m.modulID, new SelectList(Ajax.ViewBag.moduls, "Id", "Name")) </td>
+        </tr>
+        <tr>
+            <td colspan="4">Описание</td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <textarea placeholder="опишите...." name="Opisanya" rows="7" @*cols="1000"*@ required class="text-left form-control col-md-12"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">Приоритет:</td>
+            <td style="text-align:right;">Желаемое дата исполнения:</td>
+        </tr>
+        <tr>
+            @foreach (ServiceDesk.Models.predprin item in (List<ServiceDesk.Models.predprin>)ViewBag.predprin)
+        {
+            <td tyle="text-align:left;">
+                <input class="radio" type="radio" value="@item.Id" name="predprinID" />@item.Name
+            </td>
+    }
+            <td style="text-align:right;">
+                @*@Html.EditorFor(m => m.date, new { @class="datetime"})*@    <input type="date" name="date" min="2000-01-01" max="2100-01-01">
+                <br>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align:right;">@Html.TextBoxFor(model => model.PostedFile, new { placeholder = "Uploadt Your Passport", type = "file" })@*<input class="file_upload_input" type="file" name="fileUpload" id="file_termination" onchange="File_Upload()">*@</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align:center;"><input type="submit" value="Отправить"></td>
+        </tr>
+    </table>
+    }
+</div>
+
+<div id="DivResult">
+    <p>
+
+    </p>
+</div>
+
+
+<script type="text/javascript">
+    function File_Upload()
+    {
+        var formData = new FormData();
+        var totalFiles = document.getElementById("file_termination").files.length;
+        for (var i = 0; i < totalFiles; i++) {
+            var file = document.getElementById("file_termination").files[i];
+            formData.append("fileUpl", file);
+        }
+        var _fileUrl = "";
+        $.ajax({
+            type: "POST",
+           /* url: 'Home/SaveFile',*/url: '@Url.Action("SaveFile", "Home")',
+            data: formData,
+            dataType: 'json',
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                document.getElementById("a_file_termination").href = responseText;
+            },
+            error: function (error) {
+                document.getElementById("a_file_termination").href = error.responseText;
+            },
+        });
+        document.getElementById('a_file_termination').style.display = 'block';
+    }
+
+</script>
+
+
+
+
+
+@*<script>
+    $(document).ready(function () {
+
+        $(".datetime").datetimepicker({
+            isRTL: false,
+            format: 'dd.mm.yyyy hh:ii',
+            autoclose: true
+        });
+    });
+</script>*@
+
